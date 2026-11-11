@@ -5,11 +5,22 @@
 # because Alaveteli is cloned *inside* this container by setup.sh, after the
 # image is built). If alaveteli's Dockerfile changes, mirror the change here.
 
-ARG RUBY_VERSION=3.2
-FROM ruby:${RUBY_VERSION}-bullseye
+ARG RUBY_VERSION=3.4
+FROM ruby:${RUBY_VERSION}-trixie
 
 ENV DOCKER=1
 ENV DEBIAN_FRONTEND=noninteractive
+
+# Debian trixie only packages postgresql-client 17, whose pg_dump writes
+# `SET transaction_timeout = 0;` into db/structure.sql. That parameter is
+# PostgreSQL 17+ only, so an older server rejects the file and db:migrate
+# aborts before creating a single table. Take the client from PGDG instead and
+# pin it to the same major version as docker/Dockerfile-postgres.
+RUN install -d /usr/share/postgresql-common/pgdg && \
+    curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
+      https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
+    echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt trixie-pgdg main" \
+      > /etc/apt/sources.list.d/pgdg.list
 
 RUN apt-get update -y && \
     apt-get install -y \
@@ -18,7 +29,7 @@ RUN apt-get update -y && \
     libmagic-dev \
     pdftk \
     poppler-utils \
-    postgresql-client \
+    postgresql-client-15 \
     sendmail \
     tnef \
     unrtf \

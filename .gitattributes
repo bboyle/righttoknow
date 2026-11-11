@@ -1,0 +1,6 @@
+# Shell and make files must stay LF so they run inside the dev container
+# (mounted straight from the Windows checkout) and under WSL/Git Bash.
+*.sh                                          text eol=lf
+Makefile                                      text eol=lf
+script/destroy-never-confirmed-accounts       text eol=lf
+script/send-dormant-account-notices           text eol=lf

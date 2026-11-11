@@ -17,7 +17,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        RUBY_VERSION: '${RUBY_VERSION:-3.2}'
+        RUBY_VERSION: '${RUBY_VERSION:-3.4}'
     command: sleep infinity
     tty: true
     stdin_open: true
@@ -44,7 +44,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        RUBY_VERSION: '${RUBY_VERSION:-3.2}'
+        RUBY_VERSION: '${RUBY_VERSION:-3.4}'
     command: >
       sh -c 'wait-for-it db:5432 --strict --timeout=60 --
              sh -c "cd /alaveteli &&
