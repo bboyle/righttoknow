@@ -1,0 +1,43 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "docker: up",
+      "type": "shell",
+      "command": "docker compose --project-name righttoknow -f .devcontainer/docker-compose.yml up -d",
+      "problemMatcher": []
+    },
+    {
+      // Runs Puma in the foreground of a dedicated terminal so request logs
+      // stay visible. isBackground + endsPattern tells VS Code the task is
+      // "ready" once Puma prints its listening line — preLaunchTask waits on
+      // that before opening Chrome.
+      "label": "rails: server",
+      "type": "shell",
+      "dependsOn": "docker: up",
+      "dependsOrder": "sequence",
+      "command": "docker compose --project-name righttoknow -f .devcontainer/docker-compose.yml exec -T app sh -c 'cd /alaveteli && exec bin/rails server -b 0.0.0.0'",
+      "isBackground": true,
+      "problemMatcher": {
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Listening on|Use Ctrl-C to stop"
+        },
+        "pattern": {
+          "regexp": "^$",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        }
+      }
+    },
+    {
+      // For changes under lib/ (patches, helpers): touches tmp/restart.txt.
+      "label": "rails: restart",
+      "type": "shell",
+      "command": "docker compose --project-name righttoknow -f .devcontainer/docker-compose.yml exec -T app sh -c 'cd /alaveteli && bin/rails restart'",
+      "problemMatcher": []
+    }
+  ]
+}
